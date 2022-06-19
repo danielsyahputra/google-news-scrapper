@@ -81,8 +81,10 @@ query = st.text_input(label='Query', placeholder='Algoritma Data Science School'
 def load_driver():
     # Load Driver
     # driver_path = "./chromedriver"
-    # op = webdriver.ChromeOptions()
-    # op.add_argument('headless')
+    op = webdriver.ChromeOptions()
+    op.add_argument('headless')
+    op.add_argument("--disable-dev-shm-usage")
+    op.add_argument("--no-sandbox")
     # driver = webdriver.Chrome(driver_path, options=op)
     driver = webdriver.Chrome(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
     return driver
