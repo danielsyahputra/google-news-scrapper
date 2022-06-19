@@ -4,7 +4,8 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import json
-import time
+from io import BytesIO
+from pyxlsb import open_workbook as open_xlsb
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
@@ -25,13 +26,13 @@ def get_data_api(api):
     response = requests.get(api)
     return json.loads(response.content)
 
-def scroll(height):
+def scroll(driver, height):
     '''
     Scroll in Selenium
     '''
     driver.execute_script("window.scrollTo(0, {})".format(height))
 
-def get_single_element(xpath):
+def get_single_element(driver, xpath):
     '''
     Get single element by xpath in Selenium
     '''
@@ -40,7 +41,7 @@ def get_single_element(xpath):
     return driver.find_element_by_xpath(xpath)
 
 
-def get_multiple_element(xpath):
+def get_multiple_element(driver, xpath):
     '''
     Get multiple element by xpath in Selenium
     '''
@@ -49,7 +50,7 @@ def get_multiple_element(xpath):
     return driver.find_elements_by_xpath(xpath)
 
 
-def get_text(element):
+def get_text(driver, element):
     '''
     Extract text of an element in Selenium
     '''
@@ -70,66 +71,85 @@ def get_soup(url, verify=True):
     soup = BeautifulSoup(page.content)
     return soup
 
-# Load Driver
-driver_path = "./chromedriver"
-op = webdriver.ChromeOptions()
-op.add_argument('headless')
-driver = webdriver.Chrome(driver_path, options=op)
-
 # Title
 st.title('Google News Scrapper')
 
 # Input query
 query = st.text_input(label='Query', placeholder='Algoritma Data Science School')
 
-# Find query
-url = "https://www.google.com/search?q={}&tbm=nws".format(query)
+def load_driver():
+    # Load Driver
+    driver_path = "./chromedriver"
+    op = webdriver.ChromeOptions()
+    op.add_argument('headless')
+    driver = webdriver.Chrome(driver_path, options=op)
+    return driver
 
-driver.get(url=url)
+def to_excel(df):
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    df.to_excel(writer, index=False, sheet_name='Sheet1')
+    workbook = writer.book
+    worksheet = writer.sheets['Sheet1']
+    format1 = workbook.add_format({'num_format': '0.00'}) 
+    worksheet.set_column('A:A', None, format1)  
+    writer.save()
+    processed_data = output.getvalue()
+    return processed_data
 
-# Some stuff
-xpath_next = '//*[@id="pnnext"]'
-xpath_prev = '//*[@id="pnprev"]'
-xpath_div = '//*[@id="rso"]/div'
+def scrape_data(query):
+    with st.spinner('Wait for it...'):    
+        driver = load_driver()
 
-df = pd.DataFrame({
-    "media": [],
-    "judul": [],
-    "subtitle": [],
-    "tanggal": [],
-    "link": []
-})
+        # Find query
+        url = "https://www.google.com/search?q={}&tbm=nws".format(query)
 
-while True:
-    driver.get(url)
-    divs = get_multiple_element(xpath_div)
-    for div in divs:
-        text = div.text.split("\n")
-        link = div.find_element_by_tag_name('a').get_attribute('href')
-        data = {
-            "media": text[0],
-            "judul": text[1],
-            "subtitle": text[2],
-            "tanggal": text[-1],
-            "link": link
-        }
-        df = df.append(data, ignore_index=True)
-    try:
-        url = get_single_element(xpath_next).get_attribute("href")
-    except:
-        break
+        driver.get(url=url)
 
-st.write("Your query:", query)
+        # Some stuff
+        xpath_next = '//*[@id="pnnext"]'
+        xpath_div = '//*[@id="rso"]/div'
 
-st.write(df)
+        df = pd.DataFrame({
+            "media": [],
+            "judul": [],
+            "subtitle": [],
+            "tanggal": [],
+            "link": []
+        })
 
-@st.cache
-def convert_df(df):
-    return df.to_csv(f"{query}.csv").encode('utf-8')
+        while True:
+            driver.get(url)
+            divs = get_multiple_element(driver, xpath_div)
+            for div in divs:
+                text = div.text.split("\n")
+                link = div.find_element_by_tag_name('a').get_attribute('href')
+                data = {
+                    "media": text[0],
+                    "judul": text[1],
+                    "subtitle": text[2],
+                    "tanggal": text[-1],
+                    "link": link
+                }
+                df = df.append(data, ignore_index=True)
+            try:
+                url = get_single_element(driver, xpath_next).get_attribute("href")
+            except:
+                break
+        driver.close()
 
-st.download_button(
-    label="Download data as CSV",
-    data=df,
-    file_name=f'{query}.csv',
-    mime='text/csv',
-)
+        st.write("Your query:", query)
+
+        st.write(df)
+
+        
+        df_xlsx = to_excel(df)
+
+        st.download_button(
+            label='📥 Download data as Excel',
+            data=df_xlsx ,
+            file_name= f'{query}.xlsx'
+            )
+    st.success('Done!')
+    
+st.button(label='Find', on_click=scrape_data, args=(query, ))
