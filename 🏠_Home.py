@@ -5,12 +5,13 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from io import BytesIO
-from pyxlsb import open_workbook as open_xlsb
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.utils import ChromeType
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium import webdriver
@@ -79,10 +80,11 @@ query = st.text_input(label='Query', placeholder='Algoritma Data Science School'
 
 def load_driver():
     # Load Driver
-    driver_path = "./chromedriver"
-    op = webdriver.ChromeOptions()
-    op.add_argument('headless')
-    driver = webdriver.Chrome(driver_path, options=op)
+    # driver_path = "./chromedriver"
+    # op = webdriver.ChromeOptions()
+    # op.add_argument('headless')
+    # driver = webdriver.Chrome(driver_path, options=op)
+    driver = webdriver.Chrome(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
     return driver
 
 def to_excel(df):
