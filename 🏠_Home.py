@@ -83,8 +83,10 @@ def load_driver():
     # driver_path = "./chromedriver"
     op = webdriver.ChromeOptions()
     op.add_argument('headless')
+    op.add_argument('--headless')
+    op.add_argument('--no-sandbox')
+    op.add_argument('--disable-dev-shm-usage')
     # driver = webdriver.Chrome(driver_path, options=op)
-    op = webdriver.ChromeOptions()
     # op.add_argument("--disable-dev-shm-usage")
     # op.add_argument("--no-sandbox")
     driver = webdriver.Chrome('/home/appuser/.wdm/drivers/chromedriver/linux64/102.0.5005.61/chromedriver', options=op)
