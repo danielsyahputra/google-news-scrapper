@@ -11,6 +11,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.chrome import ChromeType
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium import webdriver
@@ -83,7 +84,7 @@ def load_driver():
     # op = webdriver.ChromeOptions()
     # op.add_argument('headless')
     # driver = webdriver.Chrome(driver_path, options=op)
-    driver = webdriver.Chrome(ChromeDriverManager().install()) 
+    driver = webdriver.Chrome(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
     return driver
 
 def to_excel(df):
