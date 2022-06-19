@@ -83,10 +83,11 @@ def load_driver():
     # driver_path = "./chromedriver"
     op = webdriver.ChromeOptions()
     op.add_argument('headless')
+    # driver = webdriver.Chrome(driver_path, options=op)
+    op = webdriver.ChromeOptions()
     op.add_argument("--disable-dev-shm-usage")
     op.add_argument("--no-sandbox")
-    # driver = webdriver.Chrome(driver_path, options=op)
-    driver = webdriver.Chrome(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=op)
     return driver
 
 def to_excel(df):
