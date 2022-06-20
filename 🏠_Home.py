@@ -72,6 +72,14 @@ def get_soup(url, verify=True):
     soup = BeautifulSoup(page.content)
     return soup
 
+
+# Page settings
+st.set_page_config(
+    page_title="Google News Scrapper",
+    layout="wide",
+    initial_sidebar_state="expanded"
+ )
+
 # Title
 st.title('Google News Scrapper')
 
