@@ -76,20 +76,16 @@ def get_soup(url, verify=True):
 st.title('Google News Scrapper')
 
 # Input query
-query = st.text_input(label='Query', placeholder='Algoritma Data Science School')
+query = st.text_input(label='Query', placeholder='Your query')
 
 def load_driver():
     # Load Driver
     # driver_path = "./chromedriver"
     op = webdriver.ChromeOptions()
-    op.add_argument('headless')
+    # op.add_argument('headless')
     op.add_argument('--headless')
     op.add_argument('--no-sandbox')
     op.add_argument('--disable-dev-shm-usage')
-    # driver = webdriver.Chrome(driver_path, options=op)
-    # op.add_argument("--disable-dev-shm-usage")
-    # op.add_argument("--no-sandbox")
-    # driver = webdriver.Chrome('/home/appuser/.wdm/drivers/chromedriver/linux64/102.0.5005.61/chromedriver', options=op)
     driver = webdriver.Chrome(ChromeDriverManager().install(), options=op)
     return driver
 
