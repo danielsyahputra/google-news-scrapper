@@ -88,13 +88,16 @@ query = st.text_input(label='Query', placeholder='Your query')
 
 def load_driver():
     # Load Driver
-    # driver_path = "./chromedriver"
+    driver_path = "./chromedriver"
     op = webdriver.ChromeOptions()
     # op.add_argument('headless')
     op.add_argument('--headless')
     op.add_argument('--no-sandbox')
     op.add_argument('--disable-dev-shm-usage')
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=op)
+    try:
+        driver = webdriver.Chrome(ChromeDriverManager().install(), options=op)
+    except:
+        driver = webdriver.Chrome(driver_path)
     return driver
 
 def to_excel(df):
