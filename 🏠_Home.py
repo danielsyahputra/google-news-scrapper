@@ -95,9 +95,9 @@ def load_driver():
     op.add_argument('--no-sandbox')
     op.add_argument('--disable-dev-shm-usage')
     try:
-        driver = webdriver.Chrome(ChromeDriverManager().install(), options=op)
-    except:
         driver = webdriver.Chrome(driver_path)
+    except:
+        driver = webdriver.Chrome(ChromeDriverManager().install(), options=op)
     return driver
 
 def to_excel(df):
