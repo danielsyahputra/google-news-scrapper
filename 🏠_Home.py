@@ -88,7 +88,7 @@ query = st.text_input(label='Query', placeholder='Your query')
 
 def load_driver():
     # Load Driver
-    driver_path = "./chromedriver"
+    # driver_path = "./chromedriver"
     op = webdriver.ChromeOptions()
     # op.add_argument('headless')
     op.add_argument('--headless')
