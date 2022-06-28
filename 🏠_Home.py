@@ -95,7 +95,7 @@ def load_driver():
     op.add_argument('--no-sandbox')
     op.add_argument('--disable-dev-shm-usage')
     try:
-        driver = webdriver.Chrome(driver_path)
+        driver = webdriver.Chrome(driver_path, options=op)
     except:
         driver = webdriver.Chrome(ChromeDriverManager().install(), options=op)
     return driver
